@@ -26,3 +26,7 @@ path = "examples/ch01/test01.rs"
 [[example]]
 name = "ch01_test02"
 path = "examples/ch01/test02.rs"
+
+[[example]]
+name = "ch02_first_triangle"
+path = "examples/ch02/first_triangle.rs"
