@@ -10,7 +10,7 @@ fn main() {
     let window = winit::window::Window::new(&event_loop).unwrap();
     window.set_title("ch02_first_triangle");
     env_logger::init();
-    
+
     let inputs = common::Inputs {
         source: wgpu::ShaderSource::Wgsl(Cow::Borrowed(include_str!("first_triangle.wgsl"))),
         topology: wgpu::PrimitiveTopology::TriangleList,
