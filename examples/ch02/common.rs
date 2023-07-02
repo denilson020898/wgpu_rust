@@ -1,5 +1,3 @@
-use core::num;
-
 use wgpu::{IndexFormat, PrimitiveTopology, ShaderSource};
 use winit::{
     event::{Event, WindowEvent},
