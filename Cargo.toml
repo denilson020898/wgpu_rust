@@ -55,3 +55,11 @@ path = "examples/ch04/square.rs"
 [[example]]
 name = "ch04_square_index"
 path = "examples/ch04/square_index.rs"
+
+[[example]]
+name = "ch05_scaling"
+path = "examples/ch05/scaling.rs"
+
+[[example]]
+name = "ch05_translation"
+path = "examples/ch05/translation.rs"
