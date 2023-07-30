@@ -63,3 +63,11 @@ path = "examples/ch05/scaling.rs"
 [[example]]
 name = "ch05_translation"
 path = "examples/ch05/translation.rs"
+
+[[example]]
+name = "ch05_rotation"
+path = "examples/ch05/rotation.rs"
+
+[[example]]
+name = "ch05_view_projection"
+path = "examples/ch05/view_projection.rs"
