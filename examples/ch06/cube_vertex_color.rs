@@ -12,10 +12,9 @@ mod transforms;
 
 #[path = "../common/vertex_data.rs"]
 mod vertex_data;
-mod cube_vertex_color;
 
-const IS_PERSPECTIVE: bool = true;
-// const IS_PERSPECTIVE: bool = false;
+// const IS_PERSPECTIVE: bool = true;
+const IS_PERSPECTIVE: bool = false;
 
 #[repr(C)]
 #[derive(Copy, Clone, Debug, Pod, Zeroable)]
@@ -31,13 +30,13 @@ fn vertex(p: [i8; 3], c: [i8; 3]) -> Vertex {
     }
 }
 
-fn create_vertices() -> Vec<Vertex> {
-    let (pos, col, _uv, _normal) = vertex_data::cube_data();
+fn create_vertices() -> (Vec<Vertex>, Vec<u16>) {
+    let (pos, col, ind) = vertex_data::cube_data_index();
     let mut data: Vec<Vertex> = Vec::with_capacity(pos.len());
     for i in 0..pos.len() {
         data.push(vertex(pos[i], col[i]));
     }
-    data.to_vec()
+    (data.to_vec(), ind)
 }
 
 impl Vertex {
@@ -58,6 +57,8 @@ struct State {
     vertex_buffer: wgpu::Buffer,
     uniform_buffer: wgpu::Buffer,
     uniform_bind_group: wgpu::BindGroup,
+    index_buffer: wgpu::Buffer,
+    indices_len: u32,
     model_mat: Matrix4<f32>,
     view_mat: Matrix4<f32>,
     project_mat: Matrix4<f32>,
@@ -66,6 +67,7 @@ struct State {
 impl State {
     async fn new(window: &Window) -> Self {
         let init = transforms::InitWgpu::init_wgpu(window).await;
+        let (vertex_data, index_data) = create_vertices();
 
         let shader = init
             .device
@@ -174,9 +176,18 @@ impl State {
             .device
             .create_buffer_init(&wgpu::util::BufferInitDescriptor {
                 label: Some("Vertex Buffer"),
-                contents: cast_slice(&create_vertices()),
+                contents: cast_slice(&vertex_data),
                 usage: wgpu::BufferUsages::VERTEX,
             });
+
+        let index_buffer = init
+            .device
+            .create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some("Index Buffer"),
+                contents: cast_slice(&index_data),
+                usage: wgpu::BufferUsages::INDEX,
+            });
+        let indices_len = index_data.len() as u32;
 
         Self {
             init,
@@ -184,6 +195,8 @@ impl State {
             vertex_buffer,
             uniform_buffer,
             uniform_bind_group,
+            index_buffer,
+            indices_len,
             model_mat,
             view_mat,
             project_mat,
@@ -274,8 +287,9 @@ impl State {
 
             render_pass.set_pipeline(&self.pipeline);
             render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
+            render_pass.set_index_buffer(self.index_buffer.slice(..), wgpu::IndexFormat::Uint16);
             render_pass.set_bind_group(0, &self.uniform_bind_group, &[]);
-            render_pass.draw(0..36, 0..1);
+            render_pass.draw_indexed(0..self.indices_len, 0, 0..1);
         }
 
         self.init.queue.submit(iter::once(encoder.finish()));
