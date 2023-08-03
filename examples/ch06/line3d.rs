@@ -10,7 +10,7 @@ use winit::{
 #[path = "../common/transforms.rs"]
 mod transforms;
 
-const IS_PERSPECTIVE: bool = false;
+const IS_PERSPECTIVE: bool = true;
 const NUM_VERTICES: usize = 300;
 
 #[repr(C)]
@@ -22,7 +22,7 @@ struct Vertex {
 fn create_vertices() -> [Vertex; NUM_VERTICES] {
     let mut vertices = [Vertex {
         position: [0.0, 0.0, 0.0],
-    }; 300];
+    }; NUM_VERTICES];
     for i in 0..NUM_VERTICES {
         let t = 0.1 * (i as f32) / 30.0;
         let x = (-t).exp() * (30.0 * t).sin();
@@ -79,7 +79,7 @@ impl State {
             look_direction,
             up_direction,
             init.config.width as f32 / init.config.height as f32,
-            false,
+            IS_PERSPECTIVE,
         );
         let mvp_mat = view_project_mat * model_mat;
 
